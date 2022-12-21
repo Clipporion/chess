@@ -1,16 +1,20 @@
 # frozen_string_literal: true
 
 require_relative 'node'
+require_relative 'pieces'
+require_relative 'setup'
 
 # This is the class which will be used for the chess board.
 # It consists of a hash containing all 64 nodes which represent the
 # fields of the chess board.
 # There is also a method to print the board to the command line.
 class Board
+  include Setup
   attr_reader :board
 
   def initialize
     @board = create_board
+    fill_board
   end
 
   def create_board
@@ -24,6 +28,7 @@ class Board
   end
 
   def display
+    place_symbols
     print_letter_line
     print_lines
     print_letter_line
@@ -41,7 +46,7 @@ class Board
   def print_line(line)
     print "#{line} "
     ('a'..'h').each do |letter|
-      print "| #{@board[[letter, line]].piece} "
+      print "| #{@board[[letter, line]].piece_symbol} "
     end
     print "| #{line}\n"
     print_separating_line
@@ -62,5 +67,11 @@ class Board
     end
     print '+'
     puts
+  end
+
+  def place_symbols
+    @board.each do |_key, value|
+      value.piece_symbol = value.piece.figure if value.piece
+    end
   end
 end

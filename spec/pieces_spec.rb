@@ -7,12 +7,12 @@ describe Pawn do
 
   describe '#initialize' do
     it 'creates a white pawn' do
-      expect(pawn.figure).to eq("\u2659")
+      expect(pawn.figure).to eq("\u265f")
       expect(pawn.moves).to eq([[2, 0], [1, 0]])
     end
 
     it 'creates a black pawn' do
-      expect(pawn_b.figure).to eq("\u265f")
+      expect(pawn_b.figure).to eq("\u2659")
       expect(pawn_b.moves).to eq([[-2, 0], [-1, 0]])
     end
   end
@@ -38,11 +38,11 @@ describe King do
 
   describe '#initialize' do
     it 'creates a white king' do
-      expect(king.figure).to eq("\u2654")
+      expect(king.figure).to eq("\u265a")
     end
 
     it 'creates a black king' do
-      expect(king_b.figure).to eq("\u265a")
+      expect(king_b.figure).to eq("\u2654")
     end
   end
 end
@@ -53,11 +53,11 @@ describe Queen do
 
   describe '#initialize' do
     it 'creates a white queen' do
-      expect(queen.figure).to eq("\u2655")
+      expect(queen.figure).to eq("\u265b")
     end
 
     it 'creates a black queen' do
-      expect(queen_b.figure).to eq("\u265b")
+      expect(queen_b.figure).to eq("\u2655")
     end
   end
 end
@@ -68,11 +68,11 @@ describe Rook do
 
   describe '#initialize' do
     it 'creates a white rook' do
-      expect(rook.figure).to eq("\u2656")
+      expect(rook.figure).to eq("\u265c")
     end
 
     it 'creates a black rook' do
-      expect(rook_b.figure).to eq("\u265c")
+      expect(rook_b.figure).to eq("\u2656")
     end
   end
 end
@@ -83,11 +83,11 @@ describe Bishop do
 
   describe '#initialize' do
     it 'creates a white bishop' do
-      expect(bishop.figure).to eq("\u2657")
+      expect(bishop.figure).to eq("\u265d")
     end
 
     it 'creates a black bishop' do
-      expect(bishop_b.figure).to eq("\u265d")
+      expect(bishop_b.figure).to eq("\u2657")
     end
   end
 end
@@ -98,11 +98,11 @@ describe Knight do
 
   describe '#initialize' do
     it 'creates a white knight' do
-      expect(knight.figure).to eq("\u2658")
+      expect(knight.figure).to eq("\u265e")
     end
 
     it 'creates a black knight' do
-      expect(knight_b.figure).to eq("\u265e")
+      expect(knight_b.figure).to eq("\u2658")
     end
   end
 end

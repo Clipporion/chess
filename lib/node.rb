@@ -6,11 +6,11 @@
 class Node
   attr_reader :location, :left, :left_down, :left_up,
               :up, :down, :right, :right_down, :right_up
-  attr_accessor :piece
+  attr_accessor :piece, :piece_symbol
 
   def initialize(location)
     @location = location
-    @piece = ' '
+    @piece_symbol = ' '
     @left_up = set_neighbor(location, [-1, 1])
     @up = set_neighbor(location, [0, 1])
     @right_up = set_neighbor(location, [1, 1])

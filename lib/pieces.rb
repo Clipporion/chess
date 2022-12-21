@@ -17,7 +17,7 @@ class Pieces
     return true if moves.include?(target_node.location)
   end
 
-  def create_white_figures
+  def create_black_figures
     case self
     when King then "\u2654"
     when Queen then "\u2655"
@@ -28,7 +28,7 @@ class Pieces
     end
   end
 
-  def create_black_figures
+  def create_white_figures
     case self
     when King then "\u265a"
     when Queen then "\u265b"
@@ -90,9 +90,12 @@ end
 
 # This is the class used for all the rook pieces.
 class Rook < Pieces
+  attr_accessor :was_moved
+
   def initialize(color, location)
     super
     @moves = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+    @was_moved = false
   end
 end
 
@@ -106,8 +109,11 @@ end
 
 # This is the class used for all the king pieces.
 class King < Pieces
+  attr_accessor :was_moved
+
   def initalize(color, location)
     super
     @moves = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]
+    @was_moved = false
   end
 end
