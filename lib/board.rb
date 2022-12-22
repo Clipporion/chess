@@ -75,3 +75,12 @@ class Board
     end
   end
 end
+
+board = Board.new
+board.display
+board.board[['d', 2]].piece.fill_possible_moves('single')
+p board.board[['d', 2]].piece.possible_moves
+p board.board[['d', 2]].piece.possible_moves.include?(['d', 3])
+board.board[['d', 1]].piece.fill_possible_moves
+p board.board[['d', 1]].piece.possible_moves
+p board.board[['d', 1]].piece.possible_moves.include?(['d', 8])

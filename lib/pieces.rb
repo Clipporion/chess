@@ -46,6 +46,26 @@ class Pieces
       create_black_figures
     end
   end
+
+  def fill_possible_moves(mode = '', start = location)
+    @moves.each do |move|
+      if mode == 'single'
+        x = (start[0].ord + move[0]).chr
+        y = start[1] + move[1]
+        @possible_moves << [x, y] if ('a'..'g').include?(x) && (1..8).include?(y)
+      else
+        build_move_array(start, move)
+      end
+    end
+  end
+
+  def build_move_array(start, move, x_axis = (start[0].ord + move[0]).chr, y_axis = start[1] + move[1])
+    while ('a'..'h').include?(x_axis) && (1..8).include?(y_axis)
+      @possible_moves << [x_axis, y_axis]
+      x_axis = (x_axis.ord + move[0]).chr
+      y_axis += move[1]
+    end
+  end
 end
 
 # This is the class used for all the pawn pieces.
@@ -57,17 +77,17 @@ class Pawn < Pieces
 
   def create_pawn_moves(color)
     if color == 'white'
-      [[2, 0], [1, 0]]
+      [[0, 2], [0, 1]]
     else
-      [[-2, 0], [-1, 0]]
+      [[0, -2], [0, -1]]
     end
   end
 
   def remove_double_jump(color)
     if color == 'white'
-      @moves.delete([2, 0])
+      @moves.delete([0, 2])
     else
-      @moves.delete([-2, 0])
+      @moves.delete([0, -1])
     end
   end
 end
@@ -101,7 +121,7 @@ end
 
 # This is the class used for all the queen pieces.
 class Queen < Pieces
-  def initalize(color, location)
+  def initialize(color, location)
     super
     @moves = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]
   end
@@ -111,7 +131,7 @@ end
 class King < Pieces
   attr_accessor :was_moved
 
-  def initalize(color, location)
+  def initialize(color, location)
     super
     @moves = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]
     @was_moved = false
