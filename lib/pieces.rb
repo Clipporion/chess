@@ -3,7 +3,7 @@
 # This class will be used to store all the methods every chess piece
 # will utilize.
 class Pieces
-  attr_reader :color, :moves, :figure
+  attr_reader :color, :moves, :figure, :mode
   attr_accessor :possible_moves, :location
 
   def initialize(color, location)
@@ -11,6 +11,7 @@ class Pieces
     @possible_moves = []
     @figure = create_figure(@color)
     @location = location
+    @mode = ''
   end
 
   def valid_target?(target_node)
@@ -47,7 +48,7 @@ class Pieces
     end
   end
 
-  def fill_possible_moves(mode = '', start = location)
+  def fill_possible_moves(mode = @mode, start = location)
     @moves.each do |move|
       if mode == 'single'
         x = (start[0].ord + move[0]).chr
@@ -73,6 +74,7 @@ class Pawn < Pieces
   def initialize(color, location)
     super
     @moves = create_pawn_moves(@color)
+    @mode = 'single'
   end
 
   def create_pawn_moves(color)
@@ -97,6 +99,7 @@ class Knight < Pieces
   def initialize(color, location)
     super
     @moves = [[-1, -2], [1, -2], [-1, 2], [1, 2], [-2, -1], [2, -1], [-2, 1], [2, 1]]
+    @mode = 'single'
   end
 end
 
