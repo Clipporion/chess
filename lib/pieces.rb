@@ -48,11 +48,13 @@ class Pieces
     end
   end
 
-  def fill_possible_moves(mode = @mode, start = location)
+  def fill_possible_moves(board, mode = @mode, start = location, color = board[start].piece.color)
     @moves.each do |move|
       if mode == 'single'
         x = (start[0].ord + move[0]).chr
         y = start[1] + move[1]
+        break if board[[x, y]].piece.color == color
+
         @possible_moves << [x, y] if ('a'..'g').include?(x) && (1..8).include?(y)
       else
         build_move_array(start, move)
@@ -79,9 +81,9 @@ class Pawn < Pieces
 
   def create_pawn_moves(color)
     if color == 'white'
-      [[0, 2], [0, 1]]
+      [[0, 1], [0, 2]]
     else
-      [[0, -2], [0, -1]]
+      [[0, -1], [0, -2]]
     end
   end
 
@@ -89,7 +91,7 @@ class Pawn < Pieces
     if color == 'white'
       @moves.delete([0, 2])
     else
-      @moves.delete([0, -1])
+      @moves.delete([0, -2])
     end
   end
 end
@@ -138,5 +140,16 @@ class King < Pieces
     super
     @moves = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]
     @was_moved = false
+  end
+end
+
+# This class will be used for empty fields on the board.
+class Empty
+  attr_reader :location, :color, :figure
+
+  def initialize(location)
+    @location = location
+    @color = 'none'
+    @figure = ' '
   end
 end

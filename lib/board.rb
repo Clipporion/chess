@@ -28,7 +28,6 @@ class Board
   end
 
   def display
-    place_symbols
     print_letter_line
     print_lines
     print_letter_line
@@ -46,7 +45,7 @@ class Board
   def print_line(line)
     print "#{line} "
     ('a'..'h').each do |letter|
-      print "| #{@board[[letter, line]].piece_symbol} "
+      print "| #{@board[[letter, line]].piece.figure} "
     end
     print "| #{line}\n"
     print_separating_line
@@ -68,19 +67,14 @@ class Board
     print '+'
     puts
   end
-
-  def place_symbols
-    @board.each do |_key, value|
-      value.piece_symbol = value.piece.figure if value.piece
-    end
-  end
 end
 
 board = Board.new
+board.board[['d', 4]].piece = Pawn.new('white', [['d', 4]])
 board.display
-board.board[['d', 2]].piece.fill_possible_moves('single')
+board.board[['d', 2]].piece.fill_possible_moves(board.board)
 p board.board[['d', 2]].piece.possible_moves
 p board.board[['d', 2]].piece.possible_moves.include?(['d', 3])
-board.board[['d', 1]].piece.fill_possible_moves
+board.board[['d', 1]].piece.fill_possible_moves(board.board)
 p board.board[['d', 1]].piece.possible_moves
 p board.board[['d', 1]].piece.possible_moves.include?(['d', 8])

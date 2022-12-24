@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
+require_relative 'pieces'
 # This class is representing the fields on the chess board.
 # It contains a variable to store a chess piece if one is placed on the field
 # and also knows all of the available neighbor nodes
 class Node
   attr_reader :location, :left, :left_down, :left_up,
               :up, :down, :right, :right_down, :right_up
-  attr_accessor :piece, :piece_symbol
+  attr_accessor :piece
 
   def initialize(location)
     @location = location
-    @piece_symbol = ' '
+    @piece = Empty.new(@location)
     @left_up = set_neighbor(location, [-1, 1])
     @up = set_neighbor(location, [0, 1])
     @right_up = set_neighbor(location, [1, 1])
