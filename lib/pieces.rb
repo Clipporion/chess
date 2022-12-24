@@ -48,25 +48,31 @@ class Pieces
     end
   end
 
-  def fill_possible_moves(board, mode = @mode, start = location, color = board[start].piece.color)
+  def fill_possible_moves(board, start = @location)
     @moves.each do |move|
-      if mode == 'single'
-        x = (start[0].ord + move[0]).chr
-        y = start[1] + move[1]
-        break if board[[x, y]].piece.color == color
-
-        @possible_moves << [x, y] if ('a'..'g').include?(x) && (1..8).include?(y)
+      if @mode == 'single'
+        build_moves(board, start, move)
       else
-        build_move_array(start, move)
+        build_move_multi(board, start, move)
       end
     end
   end
 
-  def build_move_array(start, move, x_axis = (start[0].ord + move[0]).chr, y_axis = start[1] + move[1])
+  def build_moves(board, start, move)
+    x = (start[0].ord + move[0]).chr
+    y = start[1] + move[1]
+    @possible_moves << [x, y] if ('a'..'g').include?(x) && (1..8).include?(y) && board[[x, y]].piece.color != @color
+  end
+
+  def build_move_multi(board, start, move, x_axis = (start[0].ord + move[0]).chr, y_axis = start[1] + move[1])
     while ('a'..'h').include?(x_axis) && (1..8).include?(y_axis)
+      piece_color = board[[x_axis, y_axis]].piece.color
+      break if piece_color == @color
+
       @possible_moves << [x_axis, y_axis]
       x_axis = (x_axis.ord + move[0]).chr
       y_axis += move[1]
+      break if piece_color != color && piece_color != 'none'
     end
   end
 end
@@ -140,6 +146,7 @@ class King < Pieces
     super
     @moves = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]
     @was_moved = false
+    @mode = 'single'
   end
 end
 

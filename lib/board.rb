@@ -70,11 +70,12 @@ class Board
 end
 
 board = Board.new
-board.board[['d', 4]].piece = Pawn.new('white', [['d', 4]])
+board.board[['d', 4]].piece = Queen.new('white', ['d', 4])
 board.display
 board.board[['d', 2]].piece.fill_possible_moves(board.board)
 p board.board[['d', 2]].piece.possible_moves
 p board.board[['d', 2]].piece.possible_moves.include?(['d', 3])
 board.board[['d', 1]].piece.fill_possible_moves(board.board)
 p board.board[['d', 1]].piece.possible_moves
-p board.board[['d', 1]].piece.possible_moves.include?(['d', 8])
+board.board[['d', 4]].piece.fill_possible_moves(board.board)
+p board.board[['d', 4]].piece.possible_moves
