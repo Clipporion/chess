@@ -5,9 +5,9 @@ require_relative 'pieces'
 # It contains a variable to store a chess piece if one is placed on the field
 # and also knows all of the available neighbor nodes
 class Node
-  attr_reader :location, :left, :left_down, :left_up,
+  attr_reader :left, :left_down, :left_up,
               :up, :down, :right, :right_down, :right_up
-  attr_accessor :piece
+  attr_accessor :piece, :location
 
   def initialize(location)
     @location = location

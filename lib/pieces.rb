@@ -12,6 +12,7 @@ class Pieces
     @figure = create_figure(@color)
     @location = location
     @mode = ''
+    @was_moved = false
   end
 
   def valid_target?(target_node)
@@ -48,14 +49,51 @@ class Pieces
     end
   end
 
-  def fill_possible_moves(board, start = @location)
-    @moves.each do |move|
-      if @mode == 'single'
-        build_moves(board, start, move)
-      else
-        build_move_multi(board, start, move)
-      end
+  # def fill_possible_moves(board, mode = @mode, start = @location)
+  #   if mode == 'pawn'
+  #     build_moves_pawn(board)
+  #   else
+  #     @moves.each do |move|
+  #       if @mode == 'single'
+  #         build_moves(board, start, move)
+  #       else
+  #         build_move_multi(board, start, move)
+  #       end
+  #     end
+  #   end
+  # end
+
+  def fill_possible_moves(board, mode = @mode, start = @location)
+    case mode
+    when 'pawn' then build_moves_pawn(board, start)
+    when 'single' then @moves.each { |move| build_moves(board, start, move) }
+    when '' then @moves.each { |move| build_move_multi(board, start, move) }
     end
+  end
+
+  def build_moves_pawn(board, start)
+    fill_possible_moves(board, 'single')
+    check_diagonal_moves(board, start)
+  end
+
+  def check_diagonal_moves(board, start)
+    case @color
+    when 'white'
+      check_diagonal(board, start, 1, 1)
+      check_diagonal(board, start, -1, 1)
+    when 'black'
+      check_diagonal(board, start, 1, -1)
+      check_diagonal(board, start, -1, -1)
+    end
+  end
+
+  def check_diagonal(board, start, x_modificator, y_modificator)
+    x = (start[0].ord + x_modificator).chr
+    y = start[1] + y_modificator
+    return unless ('a'..'g').include?(x) && (1..8).include?(y)
+
+    diagonal_field = board[[x, y]]
+    @possible_moves << [x, y] if diagonal_field.piece.color != 'none' && diagonal_field.piece.color != @color
   end
 
   def build_moves(board, start, move)
@@ -82,7 +120,7 @@ class Pawn < Pieces
   def initialize(color, location)
     super
     @moves = create_pawn_moves(@color)
-    @mode = 'single'
+    @mode = 'pawn'
   end
 
   def create_pawn_moves(color)
@@ -126,7 +164,6 @@ class Rook < Pieces
   def initialize(color, location)
     super
     @moves = [[1, 0], [-1, 0], [0, 1], [0, -1]]
-    @was_moved = false
   end
 end
 
@@ -145,7 +182,6 @@ class King < Pieces
   def initialize(color, location)
     super
     @moves = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]
-    @was_moved = false
     @mode = 'single'
   end
 end
