@@ -64,8 +64,10 @@ class Game
   end
 
   def reset_piece_variables(target)
-    @board.board[target].piece.possible_moves = []
-    @board.board[target].piece.location = target
+    piece = @board.board[target].piece
+    piece.possible_moves = []
+    piece.location = target
+    piece.was_moved = true
   end
 
   def switch_player

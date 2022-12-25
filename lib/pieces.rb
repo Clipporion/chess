@@ -4,7 +4,7 @@
 # will utilize.
 class Pieces
   attr_reader :color, :moves, :figure, :mode
-  attr_accessor :possible_moves, :location
+  attr_accessor :possible_moves, :location, :was_moved
 
   def initialize(color, location)
     @color = color
@@ -72,8 +72,16 @@ class Pieces
   end
 
   def build_moves_pawn(board, start)
+    remove_double_jump if @was_moved == true
     fill_possible_moves(board, 'single')
+    remove_impossible(board)
     check_diagonal_moves(board, start)
+  end
+
+  def remove_impossible(board)
+    @possible_moves.each do |move|
+      @possible_moves.delete(move) if board[move].piece.figure != ' '
+    end
   end
 
   def check_diagonal_moves(board, start)
@@ -131,8 +139,8 @@ class Pawn < Pieces
     end
   end
 
-  def remove_double_jump(color)
-    if color == 'white'
+  def remove_double_jump
+    if @color == 'white'
       @moves.delete([0, 2])
     else
       @moves.delete([0, -2])
