@@ -4,7 +4,7 @@
 # will utilize.
 class Pieces
   attr_reader :color, :moves, :figure, :mode
-  attr_accessor :possible_moves, :location, :was_moved
+  attr_accessor :possible_moves, :location, :was_moved, :is_checked
 
   def initialize(color, location)
     @color = color
@@ -49,25 +49,12 @@ class Pieces
     end
   end
 
-  # def fill_possible_moves(board, mode = @mode, start = @location)
-  #   if mode == 'pawn'
-  #     build_moves_pawn(board)
-  #   else
-  #     @moves.each do |move|
-  #       if @mode == 'single'
-  #         build_moves(board, start, move)
-  #       else
-  #         build_move_multi(board, start, move)
-  #       end
-  #     end
-  #   end
-  # end
-
   def fill_possible_moves(board, mode = @mode, start = @location)
     case mode
+    when 'king' then fill_possible_moves(board, 'single') unless @is_checked == true
     when 'pawn' then build_moves_pawn(board, start)
     when 'single' then @moves.each { |move| build_moves(board, start, move) }
-    when '' then @moves.each { |move| build_move_multi(board, start, move) }
+    else @moves.each { |move| build_move_multi(board, start, move) }
     end
   end
 
@@ -190,7 +177,8 @@ class King < Pieces
   def initialize(color, location)
     super
     @moves = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]
-    @mode = 'single'
+    @mode = 'king'
+    @is_checked = false
   end
 end
 
