@@ -8,25 +8,25 @@ describe Pawn do
   describe '#initialize' do
     it 'creates a white pawn' do
       expect(pawn.figure).to eq("\u265f")
-      expect(pawn.moves).to eq([[2, 0], [1, 0]])
+      expect(pawn.moves).to eq({ up: [0, 1], double: [0, 2] })
     end
 
     it 'creates a black pawn' do
       expect(pawn_b.figure).to eq("\u2659")
-      expect(pawn_b.moves).to eq([[-2, 0], [-1, 0]])
+      expect(pawn_b.moves).to eq({ down: [0, -1], double: [0, -2] })
     end
   end
 
   describe '#remove_double_jump' do
     describe 'removes the 2-field-move when a pawn has been moved' do
       it 'works with the white pawn' do
-        pawn.remove_double_jump(pawn.color)
-        expect(pawn.moves).to eq([[1, 0]])
+        pawn.remove_double_jump
+        expect(pawn.moves).to eq({ up: [0, 1] })
       end
 
       it 'works with the black pawn' do
-        pawn_b.remove_double_jump(pawn_b.color)
-        expect(pawn_b.moves).to eq([[-1, 0]])
+        pawn_b.remove_double_jump
+        expect(pawn_b.moves).to eq({ down: [0, -1] })
       end
     end
   end
