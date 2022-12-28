@@ -76,12 +76,9 @@ class Game
   end
 
   def move_piece(start, target, target_piece = @board.board[target].piece, start_piece = @board.board[start].piece)
-    @board.board[target].piece = Empty.new(start)
-    @board.board[start].piece = Empty.new(start)
+    update_board(start_piece, target_piece)
     kings_in_check
-    if (@current_color == 'white' && !@white_king.is_checked) || (@current_color == 'black' && !@black_king.is_checked)
-      update_board(start_piece, target_piece)
-    else
+    unless (@current_color == 'white' && !@white_king.is_checked) || (@current_color == 'black' && !@black_king.is_checked)
       reset(start, target, start_piece, target_piece)
     end
   end
@@ -90,6 +87,8 @@ class Game
     puts "#{start_piece.color.capitalize} player, this move would put your king in check!"
     @board.board[target].piece = target_piece
     @board.board[start].piece = start_piece
+    @white_pieces.push(target_piece) if target_piece.color == 'white'
+    @black_pieces.push(target_piece) if target_piece.color == 'black'
     @white_king.is_checked = false if @current_color == 'white'
     @black_king.is_checked = false if @current_color == 'black'
     player_turn
@@ -97,6 +96,7 @@ class Game
 
   def update_board(start_piece, target_piece)
     @board.board[target_piece.location].piece = start_piece
+    @board.board[start_piece.location].piece = Empty.new(start_piece.location)
     start_piece.location = target_piece.location
     start_piece.was_moved = true
     @white_pieces.delete(target_piece) if @white_pieces.include?(target_piece)
@@ -139,6 +139,8 @@ class Game
       puts 'Black player, your king is in check!'
     elsif @current_color == 'black' && @white_king.is_checked
       puts 'White player, your king is in check!'
+    else
+      puts 'I did nothing'
     end
   end
 
@@ -155,4 +157,11 @@ end
 system('clear')
 game = Game.new
 game.board.display
-game.play_round until game.turn == 10
+
+game.board.board.each_value do |node|
+  node.piece.fill_possible_moves(game.board.board) if node.piece.color != 'none'
+  p "#{node.piece.class}, #{node.piece.color}, #{node.piece.location}" unless node.piece.is_a?(Empty)
+  p "#{node.piece.possible_moves}" unless node.piece.is_a?(Empty)
+end
+
+# game.play_round until game.turn == 10

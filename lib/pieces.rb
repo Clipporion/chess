@@ -94,7 +94,7 @@ class Pieces
   def build_moves(board, start, key, value)
     x = (start[0].ord + value[0]).chr
     y = start[1] + value[1]
-    @possible_moves[key] = [x, y] if ('a'..'g').include?(x) && (1..8).include?(y) && board[[x, y]].piece.color != @color
+    @possible_moves[key] = [x, y] if ('a'..'h').include?(x) && (1..8).include?(y) && board[[x, y]].piece.color != @color
   end
 
   def build_move_multi(board, key, value, x_axis = (@location[0].ord + value[0]).chr, y_axis = @location[1] + value[1])
@@ -178,7 +178,7 @@ class King < Pieces
     super
     @moves = { right: [1, 0], left: [-1, 0], up: [0, 1], down: [0, -1],
                rightup: [1, 1], leftup: [-1, 1], rightdown: [1, -1], leftdown: [-1, -1] }
-    @mode = 'king'
+    @mode = 'single'
     @is_checked = false
   end
 end
