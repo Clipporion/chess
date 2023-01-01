@@ -6,13 +6,13 @@ require_relative 'node'
 
 # This is the class where all the input and game logic will be stored.
 class Game
-  attr_accessor :board, :turn, :current_color, :white_pieces, :black_pieces
+  attr_accessor :board, :turn, :current_color, :white_pieces, :black_pieces, :check_mate
   attr_reader :white_king, :black_king
 
   def initialize
     @board = Board.new
     @current_color = 'white'
-    @check = false
+    @check_mate = false
     @turn = 0
     @black_king = @board.board[['e', 8]].piece
     @white_king = @board.board[['e', 1]].piece
@@ -24,7 +24,7 @@ class Game
   def fill_pieces(color)
     res = []
     @board.board.each_value do |node|
-      res << node.piece if node.piece.color == color
+      res << node.piece if node.piece.color == color && !node.piece.is_a?(King)
     end
     res
   end
@@ -78,19 +78,20 @@ class Game
   def move_piece(start, target, target_piece = @board.board[target].piece, start_piece = @board.board[start].piece)
     update_board(start_piece, target_piece)
     kings_in_check
-    unless (@current_color == 'white' && !@white_king.is_checked) || (@current_color == 'black' && !@black_king.is_checked)
+    unless (@current_color == 'white' && !@white_king.is_checked) ||
+           (@current_color == 'black' && !@black_king.is_checked)
       reset(start, target, start_piece, target_piece)
     end
   end
 
   def reset(start, target, start_piece, target_piece)
     puts "#{start_piece.color.capitalize} player, this move would put your king in check!"
+    target_piece.location = target
     @board.board[target].piece = target_piece
+    start_piece.location = start
     @board.board[start].piece = start_piece
     @white_pieces.push(target_piece) if target_piece.color == 'white'
     @black_pieces.push(target_piece) if target_piece.color == 'black'
-    @white_king.is_checked = false if @current_color == 'white'
-    @black_king.is_checked = false if @current_color == 'black'
     player_turn
   end
 
@@ -99,24 +100,49 @@ class Game
     @board.board[start_piece.location].piece = Empty.new(start_piece.location)
     start_piece.location = target_piece.location
     start_piece.was_moved = true
+    delete_piece(target_piece)
+  end
+
+  def delete_piece(target_piece)
     @white_pieces.delete(target_piece) if @white_pieces.include?(target_piece)
     @black_pieces.delete(target_piece) if @black_pieces.include?(target_piece)
   end
 
   def kings_in_check
+    @white_king.fill_possible_moves(@board.board)
+    @black_king.fill_possible_moves(@board.board)
     king_check(@black_pieces, @white_king)
     king_check(@white_pieces, @black_king)
   end
 
   def king_check(pieces, king)
+    king.attacking_lines = {}
     pieces.each do |piece|
-      piece.fill_possible_moves(@board.board)
-      piece.possible_moves.each_value do |move_line|
-        if move_line == king.location || move_line.include?(king.location)
-          king.is_checked = true
-        end
-      end
+      compare_moves(piece, king)
     end
+    update_in_check(king)
+  end
+
+  def compare_moves(piece, king)
+    piece.fill_possible_moves(@board.board)
+    piece.possible_moves.each_value do |move_line|
+      if move_line == king.location || move_line.include?(king.location)
+        king.attacking_lines[piece.location] = move_line
+      end
+      remove_king_move(king, move_line)
+    end
+    p king.possible_moves
+    p king.attacking_lines
+  end
+
+  def remove_king_move(king, move_line)
+    king.possible_moves.each do |key, value|
+      king.possible_moves.delete(key) if move_line.include?(value) || move_line == value
+    end
+  end
+
+  def update_in_check(king)
+    king.is_checked = king.attacking_lines.length.positive? ? true : false
   end
 
   def switch_player
@@ -136,12 +162,38 @@ class Game
 
   def call_check
     if @current_color == 'white' && @black_king.is_checked
-      puts 'Black player, your king is in check!'
+      check_mate?(@black_king, @black_pieces)
+      p 'Black player, your king is in check!' unless @check_mate
     elsif @current_color == 'black' && @white_king.is_checked
-      puts 'White player, your king is in check!'
-    else
-      puts 'I did nothing'
+      check_mate?(@white_king, @white_pieces)
+      p 'White player, your king is in check!' unless @check_mate
     end
+  end
+
+  def check_mate?(king, pieces)
+    return unless king.possible_moves.empty?
+
+    king.attacking_lines.each do |attacker, attacking_line|
+      pieces.each do |piece|
+        piece.fill_possible_moves(@board.board)
+        return @check_mate = false if defended?(attacker, attacking_line, piece.possible_moves)
+      end
+    end
+    @check_mate = true
+    puts "#{king.color.capitalize} player, you are check mate!"
+  end
+
+  def defended?(attacker, attacking_line, moveset)
+    return true if moveset == attacker || moveset.include?(attacker)
+
+    moveset.each do |move|
+      return true if move == attacking_line
+
+      attacking_line.each do |attacking_move|
+        return true if move == attacking_move
+      end
+    end
+    false
   end
 
   def play_round
@@ -158,10 +210,4 @@ system('clear')
 game = Game.new
 game.board.display
 
-game.board.board.each_value do |node|
-  node.piece.fill_possible_moves(game.board.board) if node.piece.color != 'none'
-  p "#{node.piece.class}, #{node.piece.color}, #{node.piece.location}" unless node.piece.is_a?(Empty)
-  p "#{node.piece.possible_moves}" unless node.piece.is_a?(Empty)
-end
-
-# game.play_round until game.turn == 10
+game.play_round until game.check_mate

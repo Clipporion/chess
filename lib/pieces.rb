@@ -50,8 +50,9 @@ class Pieces
   end
 
   def fill_possible_moves(board, mode = @mode, start = @location)
+    @possible_moves = {}
     case mode
-    when 'king' then fill_possible_moves(board, 'single') unless @is_checked == true
+    # when 'king' then fill_possible_moves(board, 'single') unless @is_checked == true
     when 'pawn' then build_moves_pawn(board, start)
     when 'single' then @moves.each { |key, value| build_moves(board, start, key, value) }
     else @moves.each { |key, value| build_move_multi(board, key, value) }
@@ -66,8 +67,8 @@ class Pieces
   end
 
   def remove_impossible(board)
-    @possible_moves.each do |_, value|
-      @possible_moves.delete(value) if board[value].piece.figure != ' '
+    @possible_moves.each do |key, value|
+      @possible_moves.delete(key) if board[value].piece.figure != ' '
     end
   end
 
@@ -172,7 +173,7 @@ end
 
 # This is the class used for all the king pieces.
 class King < Pieces
-  attr_accessor :was_moved
+  attr_accessor :was_moved, :attacking_lines
 
   def initialize(color, location)
     super
@@ -180,6 +181,7 @@ class King < Pieces
                rightup: [1, 1], leftup: [-1, 1], rightdown: [1, -1], leftdown: [-1, -1] }
     @mode = 'single'
     @is_checked = false
+    @attacking_lines = {}
   end
 end
 
