@@ -6,14 +6,10 @@ describe Node do
   subject(:node) { described_class.new(['a', 1]) }
 
   describe '#initialize' do
-    it 'sets the neighbors right' do
-      left_node = node.left
-      right_node = node.right
-      up_node = node.up
+    it 'sets the piece right' do
+      piece = node.location
 
-      expect(left_node).to eq(nil)
-      expect(right_node).to eq(['b', 1])
-      expect(up_node).to eq(['a', 2])
+      expect(piece).to eq(['a',1])
     end
   end
 end
