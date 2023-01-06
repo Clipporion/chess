@@ -89,8 +89,23 @@ class Pieces
     return unless ('a'..'g').include?(x) && (1..8).include?(y)
 
     diagonal_field = board[[x, y]]
-    @possible_moves[name] = [x, y] if diagonal_field.piece.color != 'none' && diagonal_field.piece.color != @color
+    add_diagonal_move(name, x, y, diagonal_field)
+    # en_passant(board, start, name, x, y)
   end
+
+  def add_diagonal_move(name, x_axis, y_axis, field)
+    @possible_moves[name] = [x_axis, y_axis] if field.piece.color != 'none' && field.piece.color != @color
+  end
+
+  # def en_passant(board, start, name, x_axis, y_axis)
+  #   x = %i[rightup rightdown].include?(name) ? (start[0].ord + 1).chr : (start[0].ord - 1).chr
+  #   neighbor = board[[x, start[1]]].piece
+  #   add_en_passant(name, x_axis, y_axis, neighbor)
+  # end
+
+  # def add_en_passant(name, x_axis, y_axis, neighbor)
+  #   @possible_moves[name] = [x_axis, y_axis] if neighbor.is_a?(Pawn)
+  # end
 
   def build_moves(board, start, key, value)
     x = (start[0].ord + value[0]).chr
