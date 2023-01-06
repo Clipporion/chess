@@ -43,14 +43,37 @@ module Rochade
     end
   end
 
+  def long_rochade_move(king, rook, input)
+    if @current_color == 'white' && check_white_fields_long
+      move_king_long_white(king, rook)
+    elsif @current_color == 'black' && check_black_fields_long
+      move_king_long_black(king, rook)
+    else
+      puts "#{input.capitalize} Rochade not possible, a piece is in the way."
+      player_turn
+    end
+  end
+
   def check_white_fields_short
     return true if @board.board[['f', 1]].piece.color == 'none' && @board.board[['g', 1]].piece.color == 'none'
 
     false
   end
 
+  def check_white_fields_long
+    return true if @board.board[['d', 1]].piece.color == 'none' && @board.board[['c', 1]].piece.color == 'none'
+
+    false
+  end
+
   def check_black_fields_short
     return true if @board.board[['f', 8]].piece.color == 'none' && @board.board[['g', 8]].piece.color == 'none'
+
+    false
+  end
+
+  def check_black_fields_long
+    return true if @board.board[['d', 8]].piece.color == 'none' && @board.board[['c', 8]].piece.color == 'none'
 
     false
   end
@@ -66,11 +89,33 @@ module Rochade
     end
   end
 
+  def move_king_long_white(king, rook)
+    player_turn(user_input('e1 d1'), 'r')
+    player_turn(user_input('d1 c1'), 'r') if king.location == ['d', 1]
+    if king.location == ['c', 1]
+      move_rook_long(rook)
+    else
+      reset_king(king)
+      player_turn
+    end
+  end
+
   def move_king_short_black(king, rook)
     player_turn(user_input('e8 f8'), 'r')
     player_turn(user_input('f8 g8'), 'r') if king.location == ['f', 8]
     if king.location == ['g', 8]
       move_rook_short(rook)
+    else
+      reset_king(king)
+      player_turn
+    end
+  end
+
+  def move_king_long_black(king, rook)
+    player_turn(user_input('e8 d8'), 'r')
+    player_turn(user_input('d8 c8'), 'r') if king.location == ['d', 8]
+    if king.location == ['c', 8]
+      move_rook_long(rook)
     else
       reset_king(king)
       player_turn
@@ -100,6 +145,19 @@ module Rochade
       start.piece = Empty.new(rook.location)
       @board.board[['f', 8]].piece = rook
       rook.location = ['f', 8]
+    end
+  end
+
+  def move_rook_long(rook, start = @board.board[rook.location])
+    case @current_color
+    when 'white'
+      start.piece = Empty.new(rook.location)
+      @board.board[['d', 1]].piece = rook
+      rook.location = ['d', 1]
+    when 'black'
+      start.piece = Empty.new(rook.location)
+      @board.board[['d', 8]].piece = rook
+      rook.location = ['d', 8]
     end
   end
 end
